@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:school_connect/screens/home_screen.dart';
 
 
 class SignUpScreen extends StatelessWidget {
@@ -162,6 +163,7 @@ class SignUpScreen extends StatelessWidget {
 
               ElevatedButton(
                 onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
                   //login logic
                 },
                 style: ElevatedButton.styleFrom(
