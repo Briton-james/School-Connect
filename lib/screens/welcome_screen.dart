@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:school_connect/screens/sign_in_screen.dart'; // Import SignInScreen
+
+
+import 'home_screen.dart'; // Import SignInScreen
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -37,22 +39,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         image: 'assets/images/connect.png',
         title: 'Welcome to School Connect!',
         description: 'We connect graduates to schools for volunteering in teaching.',
-        buttonText: 'Sign In',
-        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen())),
+        buttonText: 'Continue',
+        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen())),
       ),
       _buildSlide(
         image: 'assets/images/teaching.png',
         title: 'Get Practical Experience.',
         description: 'Shape your teaching career by gaining a practical experience in teaching.',
-        buttonText: 'Sign In',
-        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen())),
+        buttonText: 'Continue',
+        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen())),
       ),
       _buildSlide(
         image: 'assets/images/certificate.png',
         title: 'Build your profile.',
         description: 'Get recognized by a certificate of recognition when you volunteer.',
-        buttonText: 'Sign In',
-        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen())),
+        buttonText: 'Continue',
+        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen())),
       ),
     ];
 
@@ -72,7 +74,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
           Positioned(
-            bottom: 20.0,
+            bottom: 80.0,
             left: 0,
             right: 0,
             child: Row(

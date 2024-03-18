@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async'; // Import for Future.delayed
-import 'package:school_connect/screens/welcome_screen.dart'; // Import WelcomeScreen
+// import 'package:school_connect/screens/welcome_screen.dart';
+
+import 'home_screen.dart'; // Import WelcomeScreen
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,8 +15,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const WelcomeScreen()));
+    Future.delayed(const Duration(seconds: 0), () {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()));
     });
   }
 
@@ -23,10 +26,44 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1061AD),
       body: Center(
-        child: Image.asset(
-          'assets/images/book.png',
-          width: 200.0,
-          height: 200.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/book.png',
+              height: 150.0,
+                width: 150.0,
+              ),
+
+              const SizedBox(
+                height: 20.0,
+              ),
+
+              RichText(text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'School',
+                      style: TextStyle(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+
+                    TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Connect',
+                            style: TextStyle(
+                              fontSize: 30.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ]
+                    )
+                  ]
+              )
+              ),
+            ]
         ),
       ),
     );
