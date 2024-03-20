@@ -11,15 +11,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // Track the selected index
   final List<Widget> _pages = [
-    // Your page widgets for each item (replace with your actual content)
+    // Home tab
     Center(
         child: ListView.builder(
           itemCount: 10, // Replace with your data source length
           itemBuilder: (context, index) => Container(
             width: double.infinity, // Allow max width within constraints
-            constraints: const BoxConstraints(maxWidth: 300.0), // Set max card width
+            constraints: const BoxConstraints(maxWidth: 300.0), //Max card width
             child: Card(
-              color: const Color(0xFF1061AD), // Set card background color (optional)
+              color: const Color(0xFF1061AD), // Card background color
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column( // Main column for three-row layout
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 16.0), // Spacing between image and text
                         const Expanded(
                           child: Text(
-                            'This is a longer paragraph describing the content of the card. It can wrap to multiple lines.',
+                            'In need of 4 teachers for Chemistry, Mathematics, Biology and Geography, one teacher each.',
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -98,8 +98,131 @@ class _HomeScreenState extends State<HomeScreen> {
         )
     ),
 
-    Center(child: Text('Search')),
-    Center(child: Text('Applications')),
+    //search tab
+    Center(child: Scaffold(
+      backgroundColor: const Color(0xff1061ad),
+      body: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+        child:  TextField(
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.grey,
+            prefixIcon: const Icon(Icons.search),
+            hintText: 'Search schools, subjects..',
+            hintFadeDuration: const Duration(seconds: 3),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide.none
+            ),
+          ),
+        ),
+      ),
+    ),
+    ),
+
+
+    //Application tab
+    Center(child: ListView.builder(
+        itemCount: 10,
+        itemBuilder: (context, index) => Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 300.0),
+          child: Card(
+            color: const Color(0xff1061ad),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.asset('assets/images/chamazi.jpg',
+                    width: 50.0,
+                    height: 50.0,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const Text('Chamazi Sec. School',
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white
+                  ),
+                  ),
+                  const SizedBox(height: 10.0,),
+                  const Text('In need of 4 teachers for Chemistry, Mathematics, Biology and Geography, one teacher each.',
+                  style: TextStyle(
+                    color: Colors.white
+                  ),
+                  ),
+                  const SizedBox(height: 10.0,),
+                  const Row(
+                    children: [
+                      Icon(Icons.cottage_outlined),
+                      SizedBox(width: 4.0,),
+                      Text('Accommodation provided by the school.',
+                      style: TextStyle(
+                        color: Colors.white
+                      ),
+                     )
+                    ],
+                  ),
+                  const SizedBox(height: 8.0,),
+                  const Row(
+                    children: [
+                      Icon(Icons.location_on_outlined),
+                      SizedBox(width: 4.0,),
+                      Text('Chamazi'),
+                      SizedBox(width: 20.0,),
+                      Icon(Icons.timer_outlined),
+                      SizedBox(width: 4.0,),
+                      Text('2 Months'),
+                    ],
+                  ),
+                  const SizedBox(height: 8.0,),
+                  const Row(
+                    children: [
+                      Text('Subjects:',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      ),
+                    ],
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text('Chemistry'),
+                      Text('Physics'),
+                    ],
+                  ),
+                  const SizedBox(height: 20.0,),
+                  Row(
+                    children: [
+                      const Text('Application status:'),
+                      const Spacer(
+                        flex: 1,
+                      ),
+                      ElevatedButton(
+                          onPressed: (){},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green
+                      ),
+                          child: const Text('Accepted!'),
+                      ),
+
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+    ),
+    ),
+
     Center(child: Text('Profile')),
   ];
 
@@ -111,61 +234,79 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: const Color(0xFF1061AD),
-        appBar: AppBar(
-          backgroundColor: const Color(0XFF1061AD),
-          centerTitle: true,
-          title: Image.asset(
-            'assets/images/book.png',
-            height: 25.0,
-            width: 25.0,
-          ),
-          bottom: const TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.black,
-            tabs: [
-              Tab(text: 'All',),
-              Tab(text: 'For you'),
-            ],
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications),
-              onPressed: () {
-                //show notifications
-              },
+    return Scaffold(
+      backgroundColor: const Color(0xFF1061AD),
+      appBar: AppBar(
+        backgroundColor: const Color(0XFF1061AD),
+        centerTitle: true,
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/book.png',
+              height: 25.0,
+              width: 25.0,
             ),
-          ],
-        ),
+            const SizedBox(width: 20.0,),
+            RichText (text: const TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'School',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
 
-        body: _pages[_selectedIndex], // Display the selected page
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              backgroundColor: Color(0xFF1061AD),
-              icon: Icon(Icons.home_filled),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.description_outlined),
-              label: 'Applications',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
+                    ),
+                  ),
+                  TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Connect',
+                          style: TextStyle(
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ]
+                  )
+                ]
+            )
             ),
           ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.orange, // Set color for selected item
-          onTap: _onItemTapped,
         ),
+        titleSpacing: 60.0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              //show notifications
+            },
+          ),
+        ],
+      ),
+
+      body: _pages[_selectedIndex], // Display the selected page
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            backgroundColor: Color(0xFF1061AD),
+            icon: Icon(Icons.home_filled),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description_outlined),
+            label: 'Applications',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.orange, // Set color for selected item
+        onTap: _onItemTapped,
       ),
     );
   }

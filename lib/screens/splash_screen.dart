@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:school_connect/screens/welcome_screen.dart';
-import 'dart:async'; // Import for Future.delayed
+import 'dart:async';
+
+import 'home_screen.dart'; // Import for Future.delayed
 
 
 class SplashScreen extends StatefulWidget {
@@ -16,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Future.delayed(const Duration(seconds: 0), () {
       Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const WelcomeScreen()));
+          MaterialPageRoute(builder: (context) => const HomeScreen()));
     });
   }
 
