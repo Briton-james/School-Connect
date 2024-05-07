@@ -1,9 +1,9 @@
 import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-
-import 'home_screen.dart'; // Import SignInScreen
+import 'volunteer_home.dart'; // Import SignInScreen
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -38,23 +38,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       _buildSlide(
         image: 'assets/images/connect.png',
         title: 'Welcome to School Connect!',
-        description: 'We connect graduates to schools for volunteering in teaching.',
+        description:
+            'We connect graduates to schools for volunteering in teaching.',
         buttonText: 'Continue',
-        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen())),
+        buttonAction: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const VolunteerHomeScreen())),
       ),
       _buildSlide(
         image: 'assets/images/teaching.png',
         title: 'Get Practical Experience.',
-        description: 'Shape your teaching career by gaining a practical experience in teaching.',
+        description:
+            'Shape your teaching career by gaining a practical experience in teaching.',
         buttonText: 'Continue',
-        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen())),
+        buttonAction: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const VolunteerHomeScreen())),
       ),
       _buildSlide(
         image: 'assets/images/certificate.png',
         title: 'Build your profile.',
-        description: 'Get recognized by a certificate of recognition when you volunteer.',
+        description:
+            'Get recognized by a certificate of recognition when you volunteer.',
         buttonText: 'Continue',
-        buttonAction: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen())),
+        buttonAction: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const VolunteerHomeScreen())),
       ),
     ];
 
@@ -69,8 +81,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               viewportFraction: 1.0, // Show entire slide
               autoPlay: true, // Enable auto-play
               autoPlayInterval: _slideDuration, // Auto-slide duration
-              autoPlayAnimationDuration: const Duration(milliseconds: 800), // Smooth transition
-              onPageChanged: (index, reason) => setState(() => _currentSlideIndex = index),
+              autoPlayAnimationDuration:
+                  const Duration(milliseconds: 800), // Smooth transition
+              onPageChanged: (index, reason) =>
+                  setState(() => _currentSlideIndex = index),
             ),
           ),
           Positioned(
@@ -82,7 +96,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               children: [
                 for (int i = 0; i < slides.length; i++)
                   CustomIndicator(
-                    color: _currentSlideIndex == i ? const Color(0XFFF68E1E) : const Color(0xFF6810AD), // Updated color handling
+                    color: _currentSlideIndex == i
+                        ? const Color(0XFFF68E1E)
+                        : const Color(0xFF6810AD), // Updated color handling
                   ),
               ],
             ),
@@ -101,7 +117,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30.0),
-      child: Column( // Closing parenthesis added here
+      child: Column(
+        // Closing parenthesis added here
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -113,13 +130,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           const SizedBox(height: 20.0),
           Text(
             title,
-            style: const TextStyle(fontSize: 22.0, color:Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                fontSize: 22.0,
+                color: Colors.white,
+                fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10.0),
           Text(
             description,
-            style: const TextStyle(fontSize: 16.0, color:Colors.white),
+            style: const TextStyle(fontSize: 16.0, color: Colors.white),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 60.0),
