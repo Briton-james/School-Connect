@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "563465787323",
+    "project_id": "schoolconnect-69f2c",
+    "storage_bucket": "schoolconnect-69f2c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563465787323:android:3fa353115821dc60a1569e",
+        "android_client_info": {
+          "package_name": "com.example.school_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDA-rurnwsm4wxBzj6d3_mJ1XCX75vUmug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
