@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-import 'volunteer_home.dart'; // Import SignInScreen
+import 'volunteer/volunteer_home.dart'; // Import SignInScreen
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);

@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:school_connect/components/application_contents.dart';
-import 'package:school_connect/components/home_contents.dart';
-import 'package:school_connect/components/profile_contents.dart';
-import 'package:school_connect/components/search_contents.dart';
+import 'package:school_connect/components/school/listing_sheet.dart';
+import 'package:school_connect/components/school/school_home_contents.dart';
 
-class VolunteerHomeScreen extends StatefulWidget {
-  const VolunteerHomeScreen({super.key});
+import '../../components/school/school_application_contents.dart';
+import '../../components/school/school_profile_contents.dart';
+import '../../components/school/school_search_contents.dart';
+
+class SchoolHomeScreen extends StatefulWidget {
+  const SchoolHomeScreen({Key? key}) : super(key: key);
 
   @override
-  _VolunteerHomeScreenState createState() => _VolunteerHomeScreenState();
+  _SchoolHomeScreenState createState() => _SchoolHomeScreenState();
 }
 
-class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
+class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
   int _selectedIndex = 0; // Track the selected index
   final List<Widget> _pages = [
     // Home tab contents.
-    const HomeContents(),
+    const SchoolHomeContents(),
 
     //search tab contents.
-    const SearchContents(),
+    const SchoolSearchContents(),
 
     //Application tab contents.
-    const ApplicationContents(),
+    const ManageApplicationsScreen(),
 
     //Profile tab contents.
-    const ProfileContents(),
+    const SchoolProfileContents(),
   ];
 
   void _onItemTapped(int index) {
@@ -51,23 +53,22 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
               width: 20.0,
             ),
             RichText(
-                text: const TextSpan(children: [
-              TextSpan(
-                text: 'School',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              text: const TextSpan(children: [
+                TextSpan(
+                  text: 'School',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              TextSpan(children: [
                 TextSpan(
                   text: 'Connect',
                   style: TextStyle(
                     color: Color(0xffA0826A),
                   ),
                 ),
-              ])
-            ])),
+              ]),
+            ),
           ],
         ),
         titleSpacing: 60.0,
@@ -107,6 +108,17 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
             const Color(0xffA0826A), // Set color for selected item
         onTap: _onItemTapped,
       ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => (showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => const ListingSheet())), // Plus icon
+        backgroundColor: const Color(0xffA0826A),
+        child: const Icon(Icons.add), // Background color
+      ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.endFloat, // Adjust the FAB position
     );
   }
 }

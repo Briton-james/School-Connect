@@ -12,7 +12,7 @@ class ListingSheet extends StatefulWidget {
 
 class _ListingSheetState extends State<ListingSheet> {
   int _groupValue = 0;
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   int _numberOfWeeks = 1;
 
   // Get screen height
@@ -75,7 +75,7 @@ class _ListingSheetState extends State<ListingSheet> {
                 minLines: 4,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText:
                       'Eg. In need of...teachers for...subjects, ... each subject',
@@ -129,7 +129,7 @@ class _ListingSheetState extends State<ListingSheet> {
                     barrierDismissible:
                         false, // Prevent user from dismissing dialog
                     builder: (BuildContext context) {
-                      return Center(
+                      return const Center(
                         child: CircularProgressIndicator(),
                       );
                     },
@@ -139,6 +139,18 @@ class _ListingSheetState extends State<ListingSheet> {
                   User? user = FirebaseAuth.instance.currentUser;
 
                   if (user != null) {
+                    // Fetch the corresponding document from the 'schools' collection
+                    DocumentSnapshot schoolSnapshot = await FirebaseFirestore
+                        .instance
+                        .collection('schools')
+                        .doc(user
+                            .uid) // Assuming the UID is the document ID in 'schools' collection
+                        .get();
+
+                    // Extract the 'location' field from the fetched document
+                    String? region = schoolSnapshot.get('region');
+                    String schoolName = schoolSnapshot.get('schoolName');
+
                     // Construct the data to be stored in Firestore
                     Map<String, dynamic> listingData = {
                       'description': _descriptionController.text,
@@ -146,6 +158,9 @@ class _ListingSheetState extends State<ListingSheet> {
                           _groupValue == 1, // Convert to boolean
                       'numberOfWeeks': _numberOfWeeks,
                       'uid': user.uid,
+                      'region': region,
+                      'schoolName': schoolName,
+                      'status': 'ongoing',
                       'timestamp': Timestamp.now(),
                     };
 

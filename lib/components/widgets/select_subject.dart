@@ -8,7 +8,10 @@ class Subject {
 }
 
 class SubjectSelection extends StatefulWidget {
-  const SubjectSelection({super.key});
+  final SelectedSubjectsCallback? onSelectedSubjectsChanged;
+
+  const SubjectSelection({Key? key, this.onSelectedSubjectsChanged})
+      : super(key: key);
 
   @override
   _SubjectSelectionState createState() => _SubjectSelectionState();
@@ -41,13 +44,23 @@ class _SubjectSelectionState extends State<SubjectSelection> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: ElevatedButton(
-        onPressed: () =>
-            setState(() => subject.isSelected = !subject.isSelected),
+        onPressed: () {
+          setState(() => subject.isSelected = !subject.isSelected);
+          widget.onSelectedSubjectsChanged?.call(getSelectedSubjects());
+        },
         style: ElevatedButton.styleFrom(
-          backgroundColor: subject.isSelected ? Colors.orange : Colors.white,
+          backgroundColor:
+              subject.isSelected ? const Color(0xffA0826A) : Colors.white,
         ),
         child: Text(subject.name),
       ),
     );
   }
+
+  List<Subject> getSelectedSubjects() {
+    return subjects.where((subject) => subject.isSelected).toList();
+  }
 }
+
+typedef SelectedSubjectsCallback = void Function(
+    List<Subject> selectedSubjects);

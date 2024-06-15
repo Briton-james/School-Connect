@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:school_connect/components/profile_contents.dart';
+import 'package:school_connect/components/volunteer/profile_contents.dart';
 import 'package:school_connect/components/widgets/select_subject.dart';
 
-class EditProfile extends StatelessWidget {
-  const EditProfile({super.key});
+class SchoolEditProfile extends StatelessWidget {
+  const SchoolEditProfile({super.key});
 
   @override
   Widget build(BuildContext context) {

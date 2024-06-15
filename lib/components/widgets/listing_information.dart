@@ -1,7 +1,76 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+class ListingsPage extends StatelessWidget {
+  const ListingsPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Listings'),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('listings').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                // Cast the data to a Map<String, dynamic> to ensure it matches your expected types
+                final Map<String, dynamic>? listingData =
+                    snapshot.data!.docs[index].data() as Map<String, dynamic>?;
+
+                if (listingData != null) {
+                  return ListingInformation(
+                    schoolName: listingData['schoolName'] ?? '',
+                    description: listingData['description'] ?? '',
+                    provideAccommodation:
+                        listingData['willProvideAccommodation'] == true,
+                    location: listingData['location'] ?? '',
+                    numberOfWeeks: listingData['numberOfWeeks'] != null
+                        ? listingData['numberOfWeeks'] as int
+                        : 0,
+                  );
+                } else {
+                  return Container(); // or any placeholder widget
+                }
+              },
+            );
+          }
+
+          return const Center(child: Text('No listings available'));
+        },
+      ),
+    );
+  }
+}
+
 class ListingInformation extends StatelessWidget {
-  const ListingInformation({super.key});
+  final String schoolName;
+  final String description;
+  final bool provideAccommodation;
+  final String location;
+  final int numberOfWeeks;
+
+  const ListingInformation({
+    Key? key,
+    required this.schoolName,
+    required this.description,
+    required this.provideAccommodation,
+    required this.location,
+    required this.numberOfWeeks,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,54 +85,60 @@ class ListingInformation extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        const Text(
-          'Chamazi Sec. School',
-          style: TextStyle(
+        Text(
+          schoolName,
+          style: const TextStyle(
               fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         const SizedBox(height: 4.0),
-        const Text(
-          'In need of 4 teachers for Chemistry, Mathematics, Biology and Geography, one teacher each.',
-          style: TextStyle(color: Colors.white),
+        Text(
+          description,
+          style: const TextStyle(color: Colors.white),
         ),
         const SizedBox(height: 16.0),
-        const Row(
+        Row(
           children: [
-            Icon(Icons.cottage_outlined),
-            SizedBox(
+            const Icon(Icons.cottage_outlined),
+            const SizedBox(
               width: 4.0,
             ),
             Text(
-              'Accommodation provided by the school.',
-              style: TextStyle(color: Colors.white),
+              provideAccommodation
+                  ? 'Accommodation provided by the school.'
+                  : 'Accommodation not provided.',
+              style: const TextStyle(color: Colors.white),
             )
           ],
         ),
         const SizedBox(
           height: 8.0,
         ),
-        const Row(
+        Row(
           children: [
-            Icon(
+            const Icon(
               Icons.location_on_outlined,
+              color: Color(0xFFA0826A),
             ),
-            SizedBox(
+            const SizedBox(
               width: 8.0,
             ),
             Text(
-              'Chamazi',
-              style: TextStyle(color: Colors.white),
+              location,
+              style: const TextStyle(color: Colors.white),
             ),
-            SizedBox(
+            const SizedBox(
               width: 20.0,
             ),
-            Icon(Icons.timer_outlined),
-            SizedBox(
+            const Icon(
+              Icons.timer_outlined,
+              color: Color(0xFFA0826A),
+            ),
+            const SizedBox(
               width: 4.0,
             ),
             Text(
-              '2 Months',
-              style: TextStyle(color: Colors.white),
+              '$numberOfWeeks Weeks',
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),

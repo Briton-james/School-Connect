@@ -4,9 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:school_connect/backend/firebase_auth_services.dart';
 import 'package:school_connect/screens/reset_password_screen.dart';
-import 'package:school_connect/screens/school_home.dart';
+import 'package:school_connect/screens/school/school_home.dart';
 import 'package:school_connect/screens/sign_up_screen.dart';
-import 'package:school_connect/screens/volunteer_home.dart';
+import 'package:school_connect/screens/volunteer/volunteer_home.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -46,7 +46,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void _validateEmail() {
     setState(() {
-      _isEmailValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+      _isEmailValid = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$')
           .hasMatch(_emailController.text);
     });
   }
@@ -65,6 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
           padding: const EdgeInsets.all(40.0),
           child: ListView(
             children: [
+              const SizedBox(height: 70.0),
               Image.asset(
                 'assets/images/book.png',
                 width: 100.0,
@@ -217,7 +218,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-// Sign in method
+  // Sign in method
   Future<void> _signIn() async {
     String email = _emailController.text;
     String password = _passwordController.text;
@@ -245,36 +246,74 @@ class _SignInScreenState extends State<SignInScreen> {
         } else {
           // Handle the case where user type is not defined
           print('User type not defined');
+          Fluttertoast.showToast(
+            msg: "User type not defined.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP,
+            textColor: const Color(0xffA0826A),
+            fontSize: 14.0,
+            backgroundColor: const Color(0xff0E424C),
+          );
         }
       } else {
         print("An error occurred during sign in");
+        Fluttertoast.showToast(
+          msg: "An error occurred during sign in.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP,
+          textColor: const Color(0xffA0826A),
+          fontSize: 14.0,
+          backgroundColor: const Color(0xff0E424C),
+        );
       }
     } on FirebaseAuthException catch (e) {
       _handleFirebaseAuthException(e);
     } catch (e) {
       print(e); // Log other unexpected errors
+      Fluttertoast.showToast(
+        msg: "An unexpected error occurred. Please try again.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        textColor: const Color(0xffA0826A),
+        fontSize: 14.0,
+        backgroundColor: const Color(0xff0E424C),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Ensure loading animation stops
+      });
     }
   }
 
   void _handleFirebaseAuthException(FirebaseAuthException e) {
+    setState(() {
+      _isLoading = false; // Stop the loading animation
+    });
+
+    String message = '';
     if (e.code == 'weak-password') {
-      print('The password provided is too weak.');
-      // Display a message to the user that the password is weak
+      message = 'The password provided is too weak.';
     } else if (e.code == 'email-already-in-use') {
-      print('The account already exists for that email.');
-      // Display a message to the user that the email is already in use
+      message = 'The account already exists for that email.';
     } else if (e.code == 'invalid-email') {
-      print('The email address is invalid.');
-      // Display a message to the user that the email is invalid
+      message = 'The email address is invalid.';
     } else if (e.code == 'user-not-found') {
-      print('The user does not exist.');
-      // Display a message to the user that the user does not exist
+      message = 'The user does not exist.';
     } else if (e.code == 'wrong-password') {
-      print('The password is incorrect.');
-      // Display a message to the user that the password is incorrect
+      message = 'The password is incorrect.';
     } else {
+      message = 'An unexpected error occurred. Please try again.';
       print(e); // Log other unexpected FirebaseAuthExceptions
     }
+
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+      textColor: Colors.red,
+      fontSize: 14.0,
+      backgroundColor: const Color(0xff0E424C),
+    );
   }
 }
 
@@ -286,7 +325,7 @@ class ForgotPasswordDialog extends StatelessWidget {
     return AlertDialog(
       title: const Text('Reset Password'),
       content: const Text(
-          'An email with a link to rest password will be sent to your registered email address'),
+          'An email with a link to reset password will be sent to your registered email address'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),

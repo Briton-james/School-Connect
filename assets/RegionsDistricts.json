@@ -1,0 +1,327 @@
+[
+  {
+    "region": "Arusha Region",
+    "districts": [
+      "Meru District",
+      "Arusha City",
+      "Arusha District",
+      "Karatu District",
+      "Longido District",
+      "Monduli District",
+      "Ngorongoro District"
+    ]
+  },
+  {
+    "region": "Dar es Salaam Region",
+    "districts": [
+      "Ilala Municipal",
+      "Kinondoni Municipal",
+      "Temeke Municipal",
+      "Kigamboni Municipal",
+      "Ubungo Municipal"
+    ]
+  },
+  {
+    "region": "Dodoma Region",
+    "districts": [
+      "Bahi District",
+      "Chamwino District",
+      "Chemba District",
+      "Dodoma Municipal",
+      "Kondoa District",
+      "Kongwa District",
+      "Mpwapwa District"
+    ]
+  },
+  {
+    "region": "Geita Region",
+    "districts": [
+      "Bukombe District",
+      "Chato District",
+      "Geita Town",
+      "Mbogwe District",
+      "Nyang'hwale District"
+    ]
+  },
+  {
+    "region": "Iringa Region",
+    "districts": [
+      "Iringa District",
+      "Iringa Municipal",
+      "Kilolo District",
+      "Mafinga Town",
+      "Mufindi District"
+    ]
+  },
+  {
+    "region": "Kagera Region",
+    "districts": [
+      "Biharamulo District",
+      "Bukoba District",
+      "Bukoba Municipal",
+      "Karagwe District",
+      "Kyerwa District",
+      "Missenyi District",
+      "Muleba District",
+      "Ngara District"
+    ]
+  },
+  {
+    "region": "Katavi Region",
+    "districts": [
+      "Mlele District",
+      "Mpanda District",
+      "Mpanda Town"
+    ]
+  },
+  {
+    "region": "Kigoma Region",
+    "districts": [
+      "Buhigwe District",
+      "Kakonko District",
+      "Kasulu District",
+      "Kasulu Town",
+      "Kibondo District",
+      "Kigoma District",
+      "Kigoma-Ujiji Municipal",
+      "Uvinza District"
+    ]
+  },
+  {
+    "region": "Kilimanjaro Region",
+    "districts": [
+      "Hai District",
+      "Moshi District",
+      "Moshi Municipal",
+      "Mwanga District",
+      "Rombo District",
+      "Same District",
+      "Siha District"
+    ]
+  },
+  {
+    "region": "Pemba Kusini Region",
+    "districts": [
+      "Chake Chake District",
+      "Mkoani District",
+      "Micheweni District",
+      "Wete District"
+    ]
+  },
+  {
+    "region": "Unguja Kusini Region",
+    "districts": [
+      "Kati District",
+      "Kusini District"
+    ]
+  },
+  {
+    "region": "Lindi Region",
+    "districts": [
+      "Kilwa District",
+      "Lindi District",
+      "Lindi Municipal",
+      "Liwale District",
+      "Nachingwea District",
+      "Ruangwa District"
+    ]
+  },
+  {
+    "region": "Manyara Region",
+    "districts": [
+      "Babati Town",
+      "Babati District",
+      "Hanang District",
+      "Kiteto District",
+      "Mbulu District",
+      "Simanjiro District"
+    ]
+  },
+  {
+    "region": "Mara Region",
+    "districts": [
+      "Bunda District",
+      "Butiama District",
+      "Musoma District",
+      "Musoma Municipal",
+      "Rorya District",
+      "Serengeti District",
+      "Tarime District"
+    ]
+  },
+  {
+    "region": "Mbeya Region",
+    "districts": [
+      "Busokelo District",
+      "Chunya District",
+      "Kyela District",
+      "Mbarali District",
+      "Mbeya District",
+      "Rungwe"
+    ]
+  },
+  {
+    "region": "Unguja Mjini Magharibi Region",
+    "districts": [
+      "Magharibi District",
+      "Mjini District",
+      "Unguja Magharibi District",
+      "Unguja Mjini District"
+    ]
+  },
+  {
+    "region": "Morogoro Region",
+    "districts": [
+      "Gairo District",
+      "Kilombero District",
+      "Kilosa District",
+      "Morogoro District",
+      "Morogoro Municipal",
+      "Mvomero District",
+      "Ulanga District",
+      "Malinyi District",
+      "Ifakara Township"
+    ]
+  },
+  {
+    "region": "Mtwara Region",
+    "districts": [
+      "Masasi District",
+      "Masasi Town",
+      "Mtwara District",
+      "Mtwara Municipal",
+      "Nanyumbu District",
+      "Newala District",
+      "Tandahimba District"
+    ]
+  },
+  {
+    "region": "Mwanza Region",
+    "districts": [
+      "Ilemela Municipal",
+      "Kwimba District",
+      "Magu District",
+      "Misungwi District",
+      "Nyamagana Municipal",
+      "Sengerema District",
+      "Ukerewe District"
+    ]
+  },
+  {
+    "region": "Njombe Region",
+    "districts": [
+      "Ludewa District",
+      "Makambako Town",
+      "Makete District",
+      "Njombe District",
+      "Njombe Town",
+      "Wanging'ombe District"
+    ]
+  },
+  {
+    "region": "Pwani Region",
+    "districts": [
+      "Bagamoyo District",
+      "Kibaha District",
+      "Kibaha Town",
+      "Kisarawe District",
+      "Mafia District",
+      "Mkuranga District",
+      "Rufiji District"
+    ]
+  },
+  {
+    "region": "Rukwa Region",
+    "districts": [
+      "Kalambo District",
+      "Nkasi District",
+      "Sumbawanga District",
+      "Sumbawanga Municipal"
+    ]
+  },
+  {
+    "region": "Ruvuma Region",
+    "districts": [
+      "Mbinga District",
+      "Songea District",
+      "Songea Municipal",
+      "Tunduru District",
+      "Namtumbo District",
+      "Nyasa District"
+    ]
+  },
+  {
+    "region": "Shinyanga Region",
+    "districts": [
+      "Kahama Town",
+      "Kahama District",
+      "Kishapu District",
+      "Shinyanga District",
+      "Shinyanga Municipal"
+    ]
+  },
+  {
+    "region": "Simiyu Region",
+    "districts": [
+      "Bariadi District",
+      "Busega District",
+      "Itilima District",
+      "Maswa District",
+      "Meatu District"
+    ]
+  },
+  {
+    "region": "Singida Region",
+    "districts": [
+      "Ikungi District",
+      "Iramba District",
+      "Manyoni District",
+      "Mkalama District",
+      "Singida District",
+      "Singida Municipal"
+    ]
+  },
+  {
+    "region": "Songwe Region",
+    "districts": [
+      "Ileje District",
+      "Mbozi District",
+      "Momba District",
+      "Songwe District"
+    ]
+  },
+  {
+    "region": "Tabora Region",
+    "districts": [
+      "Igunga District",
+      "Kaliua District",
+      "Nzega District",
+      "Sikonge District",
+      "Tabora Municipal",
+      "Urambo District",
+      "Uyui District"
+    ]
+  },
+  {
+    "region": "Tanga Region",
+    "districts": [
+      "Handeni District",
+      "Handeni Town",
+      "Kilindi District",
+      "Korogwe Town",
+      "Korogwe District",
+      "Lushoto District",
+      "Muheza District",
+      "Mkinga District",
+      "Pangani District",
+      "Tanga City"
+    ]
+  },
+  {
+    "region": "Unguja Kaskazini Region",
+    "districts": [
+      "Kaskazini A District",
+      "Kaskazini B District"
+    ]
+  }
+]

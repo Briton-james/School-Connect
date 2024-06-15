@@ -3,18 +3,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:school_connect/screens/sign_in_screen.dart';
 
-class SchoolProfileContents extends StatefulWidget {
-  const SchoolProfileContents({Key? key}) : super(key: key);
+class ProfileContents extends StatefulWidget {
+  const ProfileContents({Key? key}) : super(key: key);
 
   @override
-  _SchoolProfileContentsState createState() => _SchoolProfileContentsState();
+  _ProfileContentsState createState() => _ProfileContentsState();
 }
 
-class _SchoolProfileContentsState extends State<SchoolProfileContents> {
+class _ProfileContentsState extends State<ProfileContents> {
   // Sample profile data (initially used for display before fetching from DB)
-  String _schoolName = '';
-  String _registrationNumber = '';
-  String _location = '';
+  String _firstname = '';
+  String _surname = '';
   String _email = '';
   String _phoneNumber = '';
 
@@ -25,22 +24,20 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
   final _formKey = GlobalKey<FormState>();
 
   // Form controllers (initially empty)
-  final TextEditingController _schoolNameController = TextEditingController();
-  final TextEditingController _registrationNumberController =
-      TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
 
-  // Fetch school data upon initialization
+  // Fetch user data upon initialization
   @override
   void initState() {
     super.initState();
-    _fetchSchoolData();
+    _fetchUserData();
   }
 
-  // Fetch school data from Firestore
-  Future<void> _fetchSchoolData() async {
+  // Fetch user data from Firestore
+  Future<void> _fetchUserData() async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
 
@@ -48,61 +45,55 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
         final String uid = user.uid;
         print("Current user UID: $uid"); // For debugging
 
-        final docRef =
-            FirebaseFirestore.instance.collection('schools').doc(uid);
+        final docRef = FirebaseFirestore.instance.collection('users').doc(uid);
         final docSnapshot = await docRef.get();
 
         if (docSnapshot.exists) {
           final data = docSnapshot.data() as Map<String, dynamic>;
           setState(() {
-            _schoolName = data['schoolName'] ?? '';
-            _registrationNumber = data['registrationNumber'] ?? '';
-            _location = data['location'] ?? '';
-
+            _firstname = data['firstname'] ?? '';
+            _surname = data['surname'] ?? '';
             _email = data['email'] ?? '';
             _phoneNumber = data['phoneNumber'] ?? '';
           });
         } else {
-          print("School document not found");
-          // Handle case where school document doesn't exist (optional)
+          print("User document not found");
+          // Handle case where user document doesn't exist (optional)
           // You might want to navigate to a signup page or display a message
         }
       } else {
         print("Current user is null");
       }
     } catch (e) {
-      print("Error fetching school data: $e");
+      print("Error fetching user data: $e");
     }
   }
 
-  Future<void> updateSchoolDetails(
-      {required String schoolName,
-      required String registrationNumber,
-      required String location,
-      required String email,
-      required String phoneNumber}) async {
+  Future<void> updateUserDetails({
+    required String firstname,
+    required String surname,
+    required String phoneNumber,
+  }) async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
         final String uid = user.uid;
 
-        final docRef =
-            FirebaseFirestore.instance.collection('schools').doc(uid);
+        final docRef = FirebaseFirestore.instance.collection('users').doc(uid);
         await docRef.update({
-          'schoolName': schoolName,
-          'registrationNumber': registrationNumber,
-          'location': location,
-          'phoneNumber': _phoneNumber,
+          'first name': firstname,
+          'surname': surname,
+          'phoneNumber': phoneNumber,
         });
 
-        print("School profile updated successfully!");
+        print("User profile updated successfully!");
         // Update state variables with new data (optional)
       } else {
         print("No user signed in");
       }
     } catch (e) {
-      print("Error updating school data: $e");
+      print("Error updating user data: $e");
       // Show an error message to the user
     }
   }
@@ -153,11 +144,10 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildProfileField('School Name', _schoolName),
-        _buildProfileField('Registration Number', _registrationNumber),
-        _buildProfileField('Phone number', _phoneNumber),
+        _buildProfileField('Firstname', _firstname),
+        _buildProfileField('Surname', _surname),
         _buildProfileField('Email', _email),
-        _buildProfileField('Location', _location),
+        _buildProfileField('Phone Number', _phoneNumber),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -213,23 +203,22 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
       child: Column(
         children: [
           TextFormField(
-            controller: _schoolNameController..text = _schoolName,
-            decoration: const InputDecoration(labelText: 'School Name'),
+            controller: _firstnameController..text = _firstname,
+            decoration: const InputDecoration(labelText: 'Firstname'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter school name';
+                return 'Please enter your firstname';
               }
               return null;
             },
           ),
           const SizedBox(height: 10.0),
           TextFormField(
-            controller: _registrationNumberController
-              ..text = _registrationNumber,
-            decoration: const InputDecoration(labelText: 'Registration Number'),
+            controller: _surnameController..text = _surname,
+            decoration: const InputDecoration(labelText: 'Surname'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter registration number';
+                return 'Please enter your surname';
               }
               return null;
             },
@@ -238,27 +227,18 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
           TextFormField(
             controller: _emailController..text = _email,
             decoration: const InputDecoration(labelText: 'Email'),
-            readOnly: true,
+            readOnly: true, // Email should not be editable
           ),
           const SizedBox(height: 10.0),
           TextFormField(
             controller: _phoneNumberController..text = _phoneNumber,
-            decoration: const InputDecoration(labelText: 'Phone'),
+            decoration: const InputDecoration(labelText: 'Phone Number'),
             validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please your phone';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 10.0),
-          TextFormField(
-            controller: _locationController..text = _location,
-            decoration: const InputDecoration(labelText: 'Location'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter location';
-              }
+              // Add logic to validate phone number format (optional)
+              updateUserDetails(
+                  firstname: _firstnameController.text.trim(),
+                  surname: _surnameController.text.trim(),
+                  phoneNumber: _phoneNumberController.text.trim());
               return null;
             },
           ),
@@ -274,15 +254,7 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Update school profile in Firestore (implement update logic)
-                    updateSchoolDetails(
-                      schoolName: _schoolNameController.text.trim(),
-                      registrationNumber:
-                          _registrationNumberController.text.trim(),
-                      location: _locationController.text.trim(),
-                      email: _emailController.text.trim(),
-                      phoneNumber: _phoneNumberController.text.trim(),
-                    );
+                    // Update user profile in Firestore (implement update logic)
                     print('Profile updated');
                     setState(() => _isEditing = false);
                   }
