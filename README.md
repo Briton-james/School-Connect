@@ -1,4 +1,3 @@
-Sure, here's a detailed README for your "School Connect" project:
 
 ---
 
