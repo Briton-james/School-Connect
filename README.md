@@ -126,8 +126,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For any questions or feedback, feel free to reach out to us:
 
-- **Your Name:** [Your Email](mailto:britonmh12@gmail.com)
-- **Juma Kibula:** [Juma's Email](mailto:kibulajr@gmail.com)
+- **Briton Mhitike:** [britonmh12@gmail.com](mailto:britonmh12@gmail.com)
+- **Juma Kibula:** [kibulajr@gmail.com](mailto:kibulajr@gmail.com)
 
 ---
 
