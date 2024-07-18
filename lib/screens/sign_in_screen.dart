@@ -229,7 +229,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (user != null) {
         // Retrieve user type
         String? userType = await FirebaseAuthServices().getUserType(user.uid);
-        print('User type: $userType'); // Add this line for debugging
+        //for debugging
 
         // Redirect to the appropriate screen based on user type
         if (userType == 'school') {
@@ -245,7 +245,7 @@ class _SignInScreenState extends State<SignInScreen> {
           );
         } else {
           // Handle the case where user type is not defined
-          print('User type not defined');
+
           Fluttertoast.showToast(
             msg: "User type not defined.",
             toastLength: Toast.LENGTH_SHORT,
@@ -256,10 +256,9 @@ class _SignInScreenState extends State<SignInScreen> {
           );
         }
       } else {
-        print("An error occurred during sign in");
         Fluttertoast.showToast(
           msg: "An error occurred during sign in.",
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.TOP,
           textColor: const Color(0xffA0826A),
           fontSize: 14.0,

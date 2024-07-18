@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'application_sheet.dart';
 
@@ -51,125 +52,158 @@ class HomeContents extends StatelessWidget {
                 final willProvideAccommodation =
                     listingData['willProvideAccommodation'] ?? false;
 
-                return Container(
-                  width: double.infinity,
-                  constraints: const BoxConstraints(maxWidth: 300.0),
-                  child: Card(
-                    color: const Color(0xFF0E424C),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Row(
+                return FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('schools')
+                      .doc(schoolUID)
+                      .get(),
+                  builder: (context, schoolSnapshot) {
+                    if (schoolSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return LoadingAnimationWidget.beat(
+                          color: const Color(0xffA0826A), size: 20);
+                    }
+
+                    if (schoolSnapshot.hasError) {
+                      return Text('Error: ${schoolSnapshot.error}');
+                    }
+
+                    final schoolData =
+                        schoolSnapshot.data?.data() as Map<String, dynamic>?;
+                    final profileImageUrl =
+                        schoolData?['profileImageUrl']?.toString();
+
+                    return Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(maxWidth: 300.0),
+                      child: Card(
+                        color: const Color(0xFF0E424C),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.asset(
-                                  'assets/images/chamazi.jpg',
-                                  width: 80.0,
-                                  height: 80.0,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 16.0),
-                              Expanded(
-                                child: Text(
-                                  description,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              Text(
-                                schoolName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.location_on_outlined,
-                                color: Color(0xFFA0826A),
-                              ),
-                              const SizedBox(width: 8.0),
-                              Text(
-                                region,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 12.0),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              Icon(
-                                willProvideAccommodation
-                                    ? Icons.check_circle_outline
-                                    : Icons.cancel_outlined,
-                                color: const Color(0xFFA0826A),
-                              ),
-                              const SizedBox(width: 8.0),
-                              Text(
-                                willProvideAccommodation
-                                    ? 'Accommodation provided'
-                                    : 'No accommodation',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20.0),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.timer_outlined,
-                                color: Color(0xFFA0826A),
-                              ),
-                              const SizedBox(width: 8.0),
-                              Text('$numberOfWeeks Week(s)',
-                                  style: const TextStyle(color: Colors.white)),
-                            ],
-                          ),
-                          const SizedBox(height: 20.0),
-                          Row(
-                            children: [
-                              ElevatedButton(
-                                  onPressed: () =>
-                                      showSchoolDetails(context, schoolUID),
-                                  child: const Text('View school details')),
-                              const Spacer(),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFA0826A),
-                                ),
-                                onPressed: () => showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (context) => ApplicationSheet(
-                                    listingData: listingData,
-                                    listingID: listingID, // Pass document ID
-                                    volunteerUID:
-                                        user!.uid, // Use the user's UID
-                                    schoolUID: schoolUID, // Pass schoolUID
+                              Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: profileImageUrl != null
+                                        ? Image.network(
+                                            profileImageUrl,
+                                            width: 60.0,
+                                            height: 60.0,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            'assets/images/default_profile.png',
+                                            width: 60.0,
+                                            height: 60.0,
+                                            fit: BoxFit.cover,
+                                          ),
                                   ),
-                                ),
-                                child: const Text('Make application'),
+                                  const SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Text(
+                                      description,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Row(
+                                children: [
+                                  Text(
+                                    schoolName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.location_on_outlined,
+                                    color: Color(0xFFA0826A),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                    region,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 12.0),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Row(
+                                children: [
+                                  Icon(
+                                    willProvideAccommodation
+                                        ? Icons.check_circle_outline
+                                        : Icons.cancel_outlined,
+                                    color: const Color(0xFFA0826A),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                    willProvideAccommodation
+                                        ? 'Accommodation provided'
+                                        : 'No accommodation',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20.0),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.timer_outlined,
+                                    color: Color(0xFFA0826A),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Text('$numberOfWeeks Week(s)',
+                                      style:
+                                          const TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                              const SizedBox(height: 20.0),
+                              Row(
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: () =>
+                                          showSchoolDetails(context, schoolUID),
+                                      child: const Text('View school details')),
+                                  const Spacer(),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFA0826A),
+                                    ),
+                                    onPressed: () => showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (context) => ApplicationSheet(
+                                        listingData: listingData,
+                                        listingID:
+                                            listingID, // Pass document ID
+                                        volunteerUID:
+                                            user!.uid, // Use the user's UID
+                                        schoolUID: schoolUID, // Pass schoolUID
+                                      ),
+                                    ),
+                                    child: const Text('Make application'),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             );
@@ -210,8 +244,13 @@ class HomeContents extends StatelessWidget {
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text('District: ${schoolData['district'] ?? ''}'),
+                    Text(
+                        'Registration Number: ${schoolData['registrationNumber'] ?? ''}'),
+                    Text('Phone Number: ${schoolData['phoneNumber'] ?? ''}'),
                     Text('Email: ${schoolData['email'] ?? ''}'),
+                    Text('Region: ${schoolData['region'] ?? ''}'),
+                    Text('District: ${schoolData['district'] ?? ''}'),
+                    Text('Ward: ${schoolData['ward'] ?? ''}'),
                     Text(
                         'Gender Composition: ${schoolData['genderComposition'] ?? ''}'),
                     Text('Boarding: ${schoolData['isBoarding'] ?? false}'),
@@ -219,13 +258,8 @@ class HomeContents extends StatelessWidget {
                     Text('Religious: ${schoolData['isReligious'] ?? false}'),
                     Text(
                         'Number of Students: ${schoolData['numberOfStudents'] ?? ''}'),
-                    Text('Phone Number: ${schoolData['phoneNumber'] ?? ''}'),
-                    Text('Region: ${schoolData['region'] ?? ''}'),
-                    Text(
-                        'Registration Number: ${schoolData['registrationNumber'] ?? ''}'),
                     Text('Religion: ${schoolData['religion'] ?? ''}'),
                     Text('School Type: ${schoolData['schoolType'] ?? ''}'),
-                    Text('Ward: ${schoolData['ward'] ?? ''}'),
                   ],
                 ),
               ),

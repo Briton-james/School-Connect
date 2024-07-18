@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SchoolSearchContents extends StatefulWidget {
@@ -12,10 +13,38 @@ class _SchoolSearchContentsState extends State<SchoolSearchContents> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   Future<QuerySnapshot>? _searchResults;
+  String? schoolName;
+  String? schoolLocation;
+  String? schoolId;
+  String status = 'pending';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSchoolDetails();
+  }
+
+  Future<void> _fetchSchoolDetails() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final DocumentSnapshot schoolDoc = await FirebaseFirestore.instance
+          .collection('schools')
+          .doc(user.uid)
+          .get();
+
+      if (schoolDoc.exists) {
+        setState(() {
+          schoolId = schoolDoc.id;
+          schoolName = schoolDoc['schoolName'];
+          schoolLocation = schoolDoc['region'];
+        });
+      }
+    }
+  }
 
   void _searchVolunteers() {
     setState(() {
-      _searchQuery = _searchController.text.trim();
+      _searchQuery = _searchController.text.trim().toLowerCase();
       if (_searchQuery.isNotEmpty) {
         _searchResults = FirebaseFirestore.instance
             .collection('users')
@@ -25,6 +54,141 @@ class _SchoolSearchContentsState extends State<SchoolSearchContents> {
         _searchResults = null;
       }
     });
+  }
+
+  void _requestVolunteer(Map<String, dynamic> volunteerData) async {
+    if (volunteerData['availabilityStatus'] != 'available') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This volunteer is currently assisting another school'),
+        ),
+      );
+      return; // Exit the function if the volunteer is not available
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final TextEditingController weeksController = TextEditingController();
+        List<dynamic> subjects = volunteerData['subjects'] ?? [];
+        List<String> selectedSubjects = [];
+        bool financialAssistance = false;
+        bool accommodationAvailable = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Request ${volunteerData['firstname']}'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Text('Select subjects:'),
+                    ...subjects.map((subject) {
+                      return CheckboxListTile(
+                        title: Text(subject),
+                        value: selectedSubjects.contains(subject),
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              selectedSubjects.add(subject);
+                            } else {
+                              selectedSubjects.remove(subject);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                    TextField(
+                      controller: weeksController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Number of weeks for volunteering',
+                      ),
+                    ),
+                    CheckboxListTile(
+                      title: const Text(
+                          'School will provide financial assistance'),
+                      value: financialAssistance,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          financialAssistance = value!;
+                        });
+                      },
+                    ),
+                    CheckboxListTile(
+                      title: const Text('School will provide accommodation'),
+                      value: accommodationAvailable,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          accommodationAvailable = value!;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (schoolName == null ||
+                        schoolLocation == null ||
+                        schoolId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Error retrieving school details'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    FirebaseFirestore.instance.collection('requests').add({
+                      'volunteerId': volunteerData['uid'],
+                      'schoolId': schoolId,
+                      'schoolName': schoolName,
+                      'schoolLocation': schoolLocation,
+                      'subjects': selectedSubjects,
+                      'financialAssistance': financialAssistance,
+                      'accommodation': accommodationAvailable,
+                      'NumberOfWeeks': weeksController.text,
+                      'status': status,
+                      'message':
+                          'Hello ${volunteerData['firstname']},  $schoolName is requesting your assistance for subject(s): ${selectedSubjects.join(', ')}.',
+                    }).then((requestDoc) {
+                      // Create a notification after the request is successfully created
+                      FirebaseFirestore.instance
+                          .collection('notifications')
+                          .add({
+                        'schoolId': schoolId,
+                        'createdAt': FieldValue.serverTimestamp(),
+                        'message':
+                            'Hello ${volunteerData['firstname']},  $schoolName is requesting your assistance for subject(s): ${selectedSubjects.join(', ')}.',
+                        'volunteerId': volunteerData['uid'],
+                        'type': 'request',
+                        'read': false,
+                        'requestId': requestDoc.id,
+                      });
+                    });
+
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text('Request sent successfully'),
+                      ),
+                    );
+                  },
+                  child: const Text('Send Request'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -81,19 +245,112 @@ class _SchoolSearchContentsState extends State<SchoolSearchContents> {
 
                             return Card(
                               color: const Color(0xff34515e),
-                              child: ListTile(
-                                title: Text(
-                                  volunteerData['firstname'] ?? 'No Name',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                subtitle: Text(
-                                  volunteerData['email'] ?? 'No Email',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                trailing: Text(
-                                  (volunteerData['subjects'] as List<dynamic>)
-                                      .join(', '),
-                                  style: const TextStyle(color: Colors.white),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                            volunteerData['photoURL'] ?? '',
+                                          ),
+                                          radius: 30,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${volunteerData['firstname'] ?? 'No Name'} ${volunteerData['surname'] ?? ''}',
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              volunteerData['email'] ??
+                                                  'No Email',
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      'Age: ${volunteerData['age'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Gender: ${volunteerData['gender'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Marital Status: ${volunteerData['maritalStatus'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Education Level: ${volunteerData['educationLevel'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Employment Status: ${volunteerData['employmentStatus'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Availability Status: ${volunteerData['availabilityStatus'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Phone: ${volunteerData['phoneNumber'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Region: ${volunteerData['region'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'District: ${volunteerData['district'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Street: ${volunteerData['street'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Ward: ${volunteerData['ward'] ?? 'N/A'}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      'Subjects: ${(volunteerData['subjects'] as List<dynamic>).join(', ')}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            _requestVolunteer(volunteerData),
+                                        child: const Text('Request'),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );

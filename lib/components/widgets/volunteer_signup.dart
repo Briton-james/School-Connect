@@ -54,8 +54,14 @@ class _VolunteerSignUpFormState extends State<VolunteerSignUpForm> {
     "English",
     "History",
     "Geography",
-    "Computer Science",
-    // Add more subjects as needed
+    "ICT",
+    "Civics",
+    "Commerce",
+    "B/Keeping",
+    "Kiswahili"
+        "Divinity",
+    "Bible knowledge",
+    "Islamic studies"
   ];
 
   bool _isLoading = false;
@@ -139,6 +145,7 @@ class _VolunteerSignUpFormState extends State<VolunteerSignUpForm> {
           email: _emailController.text.trim(),
           phoneNumber: _phoneController.text.trim(),
           userType: 'volunteer',
+          availabilityStatus: 'available',
           age: _ageController.text.trim(),
           gender: _gender,
           maritalStatus: _maritalStatus,
@@ -223,6 +230,7 @@ class _VolunteerSignUpFormState extends State<VolunteerSignUpForm> {
       required String email,
       required String phoneNumber,
       required String userType,
+      required String availabilityStatus,
       required String age,
       required String? gender,
       required String? maritalStatus,

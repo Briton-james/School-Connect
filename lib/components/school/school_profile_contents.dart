@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:school_connect/screens/sign_in_screen.dart';
 
@@ -19,6 +23,7 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
   String _ward = '';
   String _email = '';
   String _phoneNumber = '';
+  String _profileImageUrl = '';
 
   // Editing status
   bool _isEditing = false;
@@ -36,14 +41,12 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
 
-  // Fetch school data upon initialization
   @override
   void initState() {
     super.initState();
     _fetchSchoolData();
   }
 
-  // Fetch school data from Firestore
   Future<void> _fetchSchoolData() async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
@@ -60,10 +63,11 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
             _schoolName = data['schoolName'] ?? '';
             _registrationNumber = data['registrationNumber'] ?? '';
             _region = data['region'] ?? '';
-            _district = data['district'];
-            _ward = data['ward'];
+            _district = data['district'] ?? '';
+            _ward = data['ward'] ?? '';
             _email = data['email'] ?? '';
             _phoneNumber = data['phoneNumber'] ?? '';
+            _profileImageUrl = data['profileImageUrl'] ?? '';
           });
         } else {
           // Handle case where school document doesn't exist (optional)
@@ -74,14 +78,16 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
     }
   }
 
-  Future<void> updateSchoolDetails(
-      {required String schoolName,
-      required String registrationNumber,
-      required String region,
-      required String district,
-      required String ward,
-      required String email,
-      required String phoneNumber}) async {
+  Future<void> updateSchoolDetails({
+    required String schoolName,
+    required String registrationNumber,
+    required String region,
+    required String district,
+    required String ward,
+    required String email,
+    required String phoneNumber,
+    String? profileImageUrl,
+  }) async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
 
@@ -95,13 +101,37 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
           'region': region,
           'district': district,
           'ward': ward,
-          'phoneNumber': _phoneNumber,
+          'email': email,
+          'phoneNumber': phoneNumber,
+          if (profileImageUrl != null) 'profileImageUrl': profileImageUrl,
         });
-
-        print("School profile updated successfully!");
       }
     } catch (e) {
-      print("Error updating school data: $e");
+      //exceptions
+    }
+  }
+
+  Future<void> _pickProfileImage() async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.first;
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profile_images/${file.name}');
+      await storageRef.putFile(File(file.path!));
+      final downloadUrl = await storageRef.getDownloadURL();
+      setState(() {
+        _profileImageUrl = downloadUrl;
+      });
+      updateSchoolDetails(
+        schoolName: _schoolName,
+        registrationNumber: _registrationNumber,
+        region: _region,
+        district: _district,
+        ward: _ward,
+        email: _email,
+        phoneNumber: _phoneNumber,
+        profileImageUrl: downloadUrl,
+      );
     }
   }
 
@@ -116,13 +146,26 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const CircleAvatar(
-                  radius: 40.0,
-                  backgroundImage: NetworkImage('https://placehold.it/100x100'),
+                GestureDetector(
+                  onTap: _pickProfileImage,
+                  child: CircleAvatar(
+                    radius: 40.0,
+                    backgroundImage: _profileImageUrl.isNotEmpty
+                        ? NetworkImage(_profileImageUrl)
+                        : const AssetImage('assets/images/default_profile.png')
+                            as ImageProvider,
+                    child: const Align(
+                      alignment: Alignment.bottomRight,
+                      child: Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
                 ),
                 IconButton(
                   onPressed: () async {
-                    // Logout functionality
                     await FirebaseAuth.instance.signOut();
                     Navigator.of(context, rootNavigator: true).pushReplacement(
                       MaterialPageRoute(
@@ -150,9 +193,9 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
         _buildProfileField('Registration Number', _registrationNumber),
         _buildProfileField('Phone number', _phoneNumber),
         _buildProfileField('Email', _email),
-        _buildProfileField('region', _region),
+        _buildProfileField('Region', _region),
         _buildProfileField('District', _district),
-        _buildProfileField('ward', _ward),
+        _buildProfileField('Ward', _ward),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -173,32 +216,29 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
   }
 
   Widget _buildProfileField(String label, String value) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.black),
+            ),
           ),
-        ),
-        const SizedBox(width: 20),
-        Expanded(
-          child: _isEditing
-              ? TextFormField(
-                  initialValue: value, // Set initial value from fetched data
-                  decoration: InputDecoration(
-                    labelText: label,
-                    border:
-                        const OutlineInputBorder(), // Add border for editing mode
-                  ),
-                )
-              : Text(
-                  value,
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                ),
-        ),
-      ],
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 14, color: Colors.black),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -257,7 +297,7 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
               return null;
             },
           ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 10.0),
           TextFormField(
             controller: _districtController..text = _district,
             decoration: const InputDecoration(labelText: 'District'),
@@ -268,7 +308,7 @@ class _SchoolProfileContentsState extends State<SchoolProfileContents> {
               return null;
             },
           ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 10.0),
           TextFormField(
             controller: _wardController..text = _ward,
             decoration: const InputDecoration(labelText: 'Ward'),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:school_connect/components/school/listing_sheet.dart';
 import 'package:school_connect/components/school/school_home_contents.dart';
-
+import 'package:school_connect/components/school/school_profile_page.dart';
+import 'package:school_connect/components/school/school_requests.dart';
 import '../../components/school/school_application_contents.dart';
-import '../../components/school/school_profile_contents.dart';
 import '../../components/school/school_search_contents.dart';
 
 class SchoolHomeScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
     const ManageApplicationsScreen(),
 
     //Profile tab contents.
-    const SchoolProfileContents(),
+    const SchoolRequests(),
   ];
 
   void _onItemTapped(int index) {
@@ -71,12 +71,25 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
             ),
           ],
         ),
-        titleSpacing: 60.0,
+        titleSpacing: 40.0,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
+            color: Colors.white,
             onPressed: () {
               //show notifications
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.person_outlined),
+            color: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ShowProfile(),
+                ),
+              );
             },
           ),
         ],
@@ -95,12 +108,12 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.description_outlined),
+            icon: Icon(Icons.south_west),
             label: 'Applications',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.north_east_outlined),
+            label: 'Requests',
           ),
         ],
         currentIndex: _selectedIndex,

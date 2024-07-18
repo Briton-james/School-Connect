@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:school_connect/components/volunteer/application_contents.dart';
 import 'package:school_connect/components/volunteer/home_contents.dart';
+import 'package:school_connect/components/volunteer/notifications_contents.dart';
 import 'package:school_connect/components/volunteer/profile_contents.dart';
-import 'package:school_connect/components/volunteer/search_contents.dart';
+import 'package:school_connect/components/volunteer/request_contents.dart';
+
+import '../../components/volunteer/volunteer_search.dart';
 
 class VolunteerHomeScreen extends StatefulWidget {
   const VolunteerHomeScreen({super.key});
@@ -14,23 +17,23 @@ class VolunteerHomeScreen extends StatefulWidget {
 class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
   int _selectedIndex = 0; // Track the selected index
   final List<Widget> _pages = [
-    // Home tab contents.
     const HomeContents(),
-
-    //search tab contents.
-    const SearchContents(),
-
-    //Application tab contents.
+    const VolunteerSearchContents(),
     const ApplicationContents(),
-
-    //Profile tab contents.
-    const ProfileContents(),
+    const VolunteerRequests(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _showNotifications() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+    );
   }
 
   @override
@@ -47,41 +50,49 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
               height: 25.0,
               width: 25.0,
             ),
-            const SizedBox(
-              width: 20.0,
-            ),
+            const SizedBox(width: 20.0),
             RichText(
-                text: const TextSpan(children: [
-              TextSpan(
-                text: 'School',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              TextSpan(children: [
-                TextSpan(
-                  text: 'Connect',
-                  style: TextStyle(
-                    color: Color(0xffA0826A),
+              text: const TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'School',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ])
-            ])),
+                  TextSpan(
+                    text: 'Connect',
+                    style: TextStyle(
+                      color: Color(0xffA0826A),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        titleSpacing: 60.0,
+        titleSpacing: 40.0,
         actions: [
           IconButton(
+            color: Colors.white,
             icon: const Icon(Icons.notifications),
+            onPressed: _showNotifications,
+          ),
+          IconButton(
+            color: Colors.white,
+            icon: const Icon(Icons.person),
             onPressed: () {
-              //show notifications
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (Context) => const ProfileContents()),
+              );
             },
           ),
         ],
       ),
-
-      body: _pages[_selectedIndex], // Display the selected page
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -94,17 +105,16 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.description_outlined),
+            icon: Icon(Icons.north_east),
             label: 'Applications',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.south_west),
+            label: 'Requests',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor:
-            const Color(0xffA0826A), // Set color for selected item
+        selectedItemColor: const Color(0xffA0826A),
         onTap: _onItemTapped,
       ),
     );

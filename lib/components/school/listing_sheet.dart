@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:school_connect/components/widgets/week_selection.dart';
 
 class ListingSheet extends StatefulWidget {
@@ -11,20 +12,51 @@ class ListingSheet extends StatefulWidget {
 }
 
 class _ListingSheetState extends State<ListingSheet> {
-  int _groupValue = 0;
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _deadlineController = TextEditingController();
   int _numberOfWeeks = 1;
+  bool _provideAccommodation = false;
+  bool _provideFinancialAssistance = false;
+  Timestamp? _deadlineTimestamp;
 
   // Get screen height
   double getScreenHeight(BuildContext context) {
     return MediaQuery.of(context).size.height;
   }
 
+  Future<void> _selectDeadline(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (pickedTime != null) {
+        final selectedDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        setState(() {
+          _deadlineTimestamp = Timestamp.fromDate(selectedDateTime);
+          _deadlineController.text =
+              DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime);
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: getScreenHeight(context) *
-          0.70, // Bottom sheet to cover 70% of screen size
+      height: getScreenHeight(context) * 0.70,
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10.0),
@@ -54,7 +86,7 @@ class _ListingSheetState extends State<ListingSheet> {
               ),
               const SizedBox(height: 18.0),
               const Text(
-                'Listing information',
+                'New Listing Information',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -87,31 +119,44 @@ class _ListingSheetState extends State<ListingSheet> {
                 ),
               ),
               const Spacer(),
-              const Text(
-                'Will your school provide accommodation?',
-                style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+              CheckboxListTile(
+                title: const Text(
+                  'Will your school provide accommodation?',
+                  style: TextStyle(color: Colors.white),
+                ),
+                value: _provideAccommodation,
+                onChanged: (newValue) {
+                  setState(() {
+                    _provideAccommodation = newValue!;
+                  });
+                },
               ),
-              RadioListTile<int>(
-                value: 0, // Value for "No"
-                groupValue: _groupValue,
-                onChanged: (newValue) =>
-                    setState(() => _groupValue = newValue!),
-                title: const Text('No', style: TextStyle(color: Colors.white)),
+              CheckboxListTile(
+                title: const Text(
+                  'Will your school provide financial assistance?',
+                  style: TextStyle(color: Colors.white),
+                ),
+                value: _provideFinancialAssistance,
+                onChanged: (newValue) {
+                  setState(() {
+                    _provideFinancialAssistance = newValue!;
+                  });
+                },
               ),
-              RadioListTile<int>(
-                value: 1, // Value for "Yes"
-                groupValue: _groupValue,
-                onChanged: (newValue) =>
-                    setState(() => _groupValue = newValue!),
-                title: const Text('Yes', style: TextStyle(color: Colors.white)),
+              const Spacer(),
+              TextField(
+                controller: _deadlineController,
+                readOnly: true,
+                onTap: () => _selectDeadline(context),
+                decoration: const InputDecoration(
+                  labelText: 'Application Deadline',
+                  hintText: 'Select date and time',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const Spacer(),
               NumberOfWeeksSelector(
                 onChanged: (value) {
-                  // Assuming NumberOfWeeksSelector has an onChanged callback
                   setState(() {
                     _numberOfWeeks = value;
                   });
@@ -123,11 +168,21 @@ class _ListingSheetState extends State<ListingSheet> {
                   backgroundColor: const Color(0xffA0826A),
                 ),
                 onPressed: () async {
-                  // Show loading indicator
+                  if (_descriptionController.text.isEmpty ||
+                      _deadlineTimestamp == null) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text('Please fill all fields.'),
+                      ),
+                    );
+                    return;
+                  }
+
                   showDialog(
                     context: context,
-                    barrierDismissible:
-                        false, // Prevent user from dismissing dialog
+                    barrierDismissible: false,
                     builder: (BuildContext context) {
                       return const Center(
                         child: CircularProgressIndicator(),
@@ -135,42 +190,47 @@ class _ListingSheetState extends State<ListingSheet> {
                     },
                   );
 
-                  // Get the current user
                   User? user = FirebaseAuth.instance.currentUser;
 
                   if (user != null) {
-                    // Fetch the corresponding document from the 'schools' collection
                     DocumentSnapshot schoolSnapshot = await FirebaseFirestore
                         .instance
                         .collection('schools')
-                        .doc(user
-                            .uid) // Assuming the UID is the document ID in 'schools' collection
+                        .doc(user.uid)
                         .get();
 
-                    // Extract the 'location' field from the fetched document
-                    String? region = schoolSnapshot.get('region');
+                    String region = schoolSnapshot.get('region');
+                    String district = schoolSnapshot.get('district');
+                    String ward = schoolSnapshot.get('ward');
+                    String street = schoolSnapshot.get('street');
                     String schoolName = schoolSnapshot.get('schoolName');
 
-                    // Construct the data to be stored in Firestore
+                    String location = '$region, $district, $ward, $street';
+
                     Map<String, dynamic> listingData = {
                       'description': _descriptionController.text,
-                      'willProvideAccommodation':
-                          _groupValue == 1, // Convert to boolean
+                      'willProvideAccommodation': _provideAccommodation,
+                      'willProvideFinancialAssistance':
+                          _provideFinancialAssistance,
+                      'deadline': _deadlineTimestamp,
                       'numberOfWeeks': _numberOfWeeks,
                       'uid': user.uid,
                       'region': region,
+                      'district': district,
+                      'ward': ward,
+                      'street': street,
+                      'location': location,
                       'schoolName': schoolName,
                       'status': 'ongoing',
                       'timestamp': Timestamp.now(),
                     };
 
                     try {
-                      // Add the listing data to Firestore
                       await FirebaseFirestore.instance
                           .collection('listings')
                           .add(listingData);
 
-                      // Show success toast message
+                      Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           backgroundColor: Colors.green,
@@ -178,7 +238,7 @@ class _ListingSheetState extends State<ListingSheet> {
                         ),
                       );
                     } catch (e) {
-                      // Show error toast message
+                      Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.red,
@@ -186,9 +246,7 @@ class _ListingSheetState extends State<ListingSheet> {
                         ),
                       );
                     } finally {
-                      // Close the loading indicator dialog and bottom sheet
-                      Navigator.of(context).pop(); // Close dialog
-                      Navigator.of(context).pop(); // Close bottom sheet
+                      Navigator.of(context).pop();
                     }
                   }
                 },

@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-
-import 'volunteer/volunteer_home.dart'; // Import SignInScreen
+import 'package:school_connect/screens/sign_in_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -41,10 +40,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         description:
             'We connect graduates to schools for volunteering in teaching.',
         buttonText: 'Continue',
-        buttonAction: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const VolunteerHomeScreen())),
+        buttonAction: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const SignInScreen())),
       ),
       _buildSlide(
         image: 'assets/images/teaching.png',
@@ -52,10 +49,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         description:
             'Shape your teaching career by gaining a practical experience in teaching.',
         buttonText: 'Continue',
-        buttonAction: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const VolunteerHomeScreen())),
+        buttonAction: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const SignInScreen())),
       ),
       _buildSlide(
         image: 'assets/images/certificate.png',
@@ -63,15 +58,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         description:
             'Get recognized by a certificate of recognition when you volunteer.',
         buttonText: 'Continue',
-        buttonAction: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const VolunteerHomeScreen())),
+        buttonAction: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const SignInScreen())),
       ),
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1061AD),
+      backgroundColor: const Color(0xFF0E424C),
       body: Stack(
         children: [
           CarouselSlider(
@@ -98,7 +91,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   CustomIndicator(
                     color: _currentSlideIndex == i
                         ? const Color(0XFFF68E1E)
-                        : const Color(0xFF6810AD), // Updated color handling
+                        : const Color(0xffA0826A), // Updated color handling
                   ),
               ],
             ),
@@ -147,7 +140,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ElevatedButton(
               onPressed: buttonAction,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
+                backgroundColor: const Color(0xffA0826A),
                 minimumSize: const Size(150, 50),
               ),
               child: Text(

@@ -6,7 +6,7 @@ class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1061AD),
+      backgroundColor: const Color(0xFF0E424C),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(40.0),
@@ -102,7 +102,7 @@ class ResetPassword extends StatelessWidget {
                   //login logic
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
+                  backgroundColor: const Color(0xffA0826A),
                   padding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 40.0),
                 ),

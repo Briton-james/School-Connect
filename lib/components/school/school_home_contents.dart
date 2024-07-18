@@ -5,6 +5,18 @@ import 'package:flutter/material.dart';
 class SchoolHomeContents extends StatelessWidget {
   const SchoolHomeContents({Key? key}) : super(key: key);
 
+  Future<String?> _fetchProfileImageUrl(String uid) async {
+    final docRef = FirebaseFirestore.instance.collection('schools').doc(uid);
+    final docSnapshot = await docRef.get();
+
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data() as Map<String, dynamic>;
+      return data['profileImageUrl'] as String?;
+    } else {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<User?>(
@@ -55,118 +67,160 @@ class SchoolHomeContents extends StatelessWidget {
             itemBuilder: (context, index) {
               final document = snapshot.data!.docs[index];
               final listingData = document.data() as Map<String, dynamic>;
+              final listingUID = listingData['uid'] as String;
 
-              return Container(
-                width: double.infinity,
-                constraints: const BoxConstraints(maxWidth: 300.0),
-                child: Card(
-                  color: const Color(0xFF0E424C),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Row(
+              return FutureBuilder<String?>(
+                future: _fetchProfileImageUrl(listingUID),
+                builder: (context, profileImageSnapshot) {
+                  final profileImageUrl = profileImageSnapshot.data;
+
+                  return Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 300.0),
+                    child: Card(
+                      color: const Color(0xFF0E424C),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.asset(
-                                'assets/images/chamazi.jpg',
-                                width: 60.0,
-                                height: 60.0,
-                                fit: BoxFit.cover,
-                              ),
+                            Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: profileImageUrl != null
+                                      ? Image.network(
+                                          profileImageUrl,
+                                          width: 60.0,
+                                          height: 60.0,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.asset(
+                                          'assets/images/default_profile.png',
+                                          width: 60.0,
+                                          height: 60.0,
+                                          fit: BoxFit.cover,
+                                        ),
+                                ),
+                                const SizedBox(width: 16.0),
+                                Expanded(
+                                  child: Text(
+                                    listingData['description']?.toString() ??
+                                        '',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: Text(
-                                listingData['description']?.toString() ?? '',
-                                style: const TextStyle(color: Colors.white),
-                              ),
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                Text(
+                                  listingData['schoolName']?.toString() ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          children: [
-                            Text(
-                              listingData['schoolName']?.toString() ?? '',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.location_on_outlined,
-                              color: Color(0xffA0826A),
-                            ),
-                            const SizedBox(width: 8.0),
-                            Text(
-                              listingData['region']?.toString() ?? '',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            const SizedBox(width: 8.0),
-                            const Icon(
-                              Icons.timer_outlined,
-                              color: Color(0xffA0826A),
-                            ),
-                            const SizedBox(width: 8.0),
-                            Text(
-                              '${listingData['numberOfWeeks']?.toString() ?? 0} Week(s)',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.apartment_outlined,
-                              color: Colors.white,
+                            const SizedBox(height: 8.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 8.0),
+                                Text(
+                                  listingData['region']?.toString() ?? '',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
                             ),
                             const SizedBox(
-                              width: 20,
+                              height: 8,
                             ),
-                            Text(
-                              listingData['willProvideAccommodation'] == true
-                                  ? 'Accommodation provided by school'
-                                  : 'No accommodation',
-                              style: const TextStyle(color: Colors.white),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.timer_outlined,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 8.0),
+                                Text(
+                                  'Volunteering duration: ${listingData['numberOfWeeks']?.toString() ?? 0} Week(s)',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.apartment_outlined,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  listingData['willProvideAccommodation'] ==
+                                          true
+                                      ? 'Accommodation provided by school'
+                                      : 'No accommodation',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.monetization_on_outlined,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  listingData['willProvideFinancialAssistance'] ==
+                                          true
+                                      ? 'Financial assistance provided by school'
+                                      : 'No Financial assistance',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Status: ${listingData['status']}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                                Switch(
+                                  value: listingData['status'] == 'ongoing',
+                                  onChanged: (value) {
+                                    _confirmStatusChange(
+                                        context, document.id, value);
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 20.0,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Status: ${listingData['status']}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            Switch(
-                              value: listingData['status'] == 'ongoing',
-                              onChanged: (value) {
-                                _confirmStatusChange(
-                                    context, document.id, value);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
           );
@@ -184,8 +238,8 @@ class SchoolHomeContents extends StatelessWidget {
           title: const Text('Confirm Status Change'),
           content: Text(
             isOngoing
-                ? 'Are you sure you want to change the status to "ongoing"?'
-                : 'Are you sure you want to change the status to "ended"?',
+                ? 'Are you sure you want to allow applications?'
+                : 'Are you sure you want to end applications?',
           ),
           actions: <Widget>[
             TextButton(
